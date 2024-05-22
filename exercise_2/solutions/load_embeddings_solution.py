@@ -86,7 +86,7 @@ def load_questions():
 
     # Here, we show you how the vectors take some time to create
     print("Index Description...........")
-    print("you won't see nay vectors.. yet!")
+    print("you won't see any vectors.. yet!")
     print(index.describe_index_stats())
 
 
