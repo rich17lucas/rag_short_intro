@@ -10,7 +10,7 @@ from pinecone import Pinecone, ServerlessSpec
 # OPENAI_API_KEY
 
 # This loads all the env variables defined in your .env file
-load_dotenv()
+load_dotenv(override=True)
 
 # This call works becasue you OPENAI_API_KEY has been loaded
 # And openai fetch it unless you explicitly define an api key in the call
@@ -54,11 +54,15 @@ def create_index():
         spec=ServerlessSpec(cloud="aws", region="us-east-1"),
     )
 
+    print("Created index `questions` in Pinecone")
+
 
 # Function to embed text, it will be used for uploading vectors
 # and for embedding any query before querying Pinecone
 def get_embedding_for(text):
-
+    """
+    A function to get the embedding for a given input text.
+    """
     response = oa.embeddings.create(model="text-embedding-3-small", input=text)
     print("-----------------------------------------------------------")
     print("Embedding text:", text)
