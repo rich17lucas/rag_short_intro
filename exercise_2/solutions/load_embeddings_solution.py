@@ -1,8 +1,8 @@
 import os
-from dotenv import load_dotenv
-from pinecone import Pinecone, ServerlessSpec
-from openai import OpenAI
 
+from dotenv import load_dotenv
+from openai import OpenAI
+from pinecone import Pinecone, ServerlessSpec
 
 # We're loading env variables with dotenv
 # Store your env variable in .env for
@@ -14,8 +14,8 @@ load_dotenv()
 
 # This call works becasue you OPENAI_API_KEY has been loaded
 # And openai fetch it unless you explicitly define an api key in the call
-oa = OpenAI() # could be OpenAI(api_key=os.getenv('OPENAI_API_KEY')
-pc = Pinecone(api_key=os.getenv('PINECONE_API_KEY'))
+oa = OpenAI()  # could be OpenAI(api_key=os.getenv('OPENAI_API_KEY')
+pc = Pinecone(api_key=os.getenv("PINECONE_API_KEY"))
 
 
 # These are the questions we're uploading
@@ -29,30 +29,29 @@ questions = [
     "of all airlines which airline has the most arrivals in atlanta",
     "what ground transportation is available in boston",
     "i would like your rates between atlanta and boston on september third",
-    "which airlines fly between boston and pittsburgh"
+    "which airlines fly between boston and pittsburgh",
 ]
 
 
 # Function to create the Pinecone index
 def create_index():
-
+    """
+    This function creates the questions index in Pinecone.
+    If it already exists, it will be deleted and recreated.
+    """
     try:
-        pc.delete_index('questions')
-
+        pc.delete_index("questions")
+        print("Deleted index `questions` from Pinecone")
     except:
-
-        print('No index to delete')
+        print("No action required, index `questions` does not exist")
 
     # TODO familiarise yourself with the create_index call
     # TODO Update the dimensions to reflect the number of vectors in OpenAI embedding model
     pc.create_index(
-        name='questions',
-        dimension=1536, # How many dimensions?
-        metric='cosine',
-        spec=ServerlessSpec(
-            cloud='aws',
-            region='us-east-1'
-        )
+        name="questions",
+        dimension=1536,  # How many dimensions?
+        metric="cosine",
+        spec=ServerlessSpec(cloud="aws", region="us-east-1"),
     )
 
 
@@ -60,14 +59,10 @@ def create_index():
 # and for embedding any query before querying Pinecone
 def get_embedding_for(text):
 
-    response = oa.embeddings.create(
-        model="text-embedding-3-small",
-        input=text
-
-    )
-    print('-----------------------------------------------------------')
-    print('Embedding text:', text)
-    print('-----------------------------------------------------------')
+    response = oa.embeddings.create(model="text-embedding-3-small", input=text)
+    print("-----------------------------------------------------------")
+    print("Embedding text:", text)
+    print("-----------------------------------------------------------")
     print("Response:")
     print(response)
 
@@ -76,8 +71,10 @@ def get_embedding_for(text):
 
 # Function to upload vectors and associated question data
 def load_questions():
-
-    index = pc.Index('questions')
+    """
+    This function uploads the questions and their embeddings to Pinecone.
+    """
+    index = pc.Index("questions")
 
     rows = []
 
@@ -86,31 +83,26 @@ def load_questions():
         # Note how we store the original question alongside the vector
         # in the metadata
         row = {
-            'id': str(i), # each Pinecone record needs a string id
-            'values': get_embedding_for(question),
-            'metadata': {'question': question}
+            "id": str(i),  # each Pinecone record needs a string id
+            "values": get_embedding_for(question),
+            "metadata": {"question": question},
         }
-
         rows.append(row)
 
     # Upload the rows as a batch
-    index.upsert(
-        rows
-    )
+    index.upsert(rows)
 
     # Here, we show you how the vectors take some time to create
-    print('Index Description...........')
+    print("Index Description...........")
     print("you won't see nay vectors.. yet!")
     print(index.describe_index_stats())
 
 
 # TODO Try out this function to get an embedding
 # The raw response from openAI will be printed
-#get_embedding_for('How do I get a taxi in Boston?')
+# get_embedding_for('How do I get a taxi in Boston?')
 
 
 # TODO Uncomment these function calls and run this code to load data
 create_index()
 load_questions()
-
-
