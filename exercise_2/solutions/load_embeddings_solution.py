@@ -68,15 +68,10 @@ def get_embedding_for(text):
 
 # Function to upload vectors and associated question data
 def load_questions():
-    """
-    This function uploads the questions and their embeddings to Pinecone.
-    """
     index = pc.Index("questions")
-
     rows = []
 
     for i, question in enumerate(questions):
-
         # Note how we store the original question alongside the vector
         # in the metadata
         row = {
