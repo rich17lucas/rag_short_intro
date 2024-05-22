@@ -35,13 +35,11 @@ questions = [
 
 # Function to create the Pinecone index
 def create_index():
-
     try:
         pc.delete_index("questions")
-
+        print("Deleted index `questions` from Pinecone")
     except:
-
-        print("No index to delete")
+        print("No action required, index `questions` does not exist")
 
     # TODO familiarise yourself with the create_index call
     # TODO Update the dimensions to reflect the number of vectors in OpenAI embedding model
@@ -52,11 +50,12 @@ def create_index():
         spec=ServerlessSpec(cloud="aws", region="us-east-1"),
     )
 
+    print("Created index `questions` in Pinecone")
+
 
 # Function to embed text, it will be used for uploading vectors
 # and for embedding any query before querying Pinecone
 def get_embedding_for(text):
-
     response = oa.embeddings.create(model="text-embedding-3-small", input=text)
     print("-----------------------------------------------------------")
     print("Embedding text:", text)
@@ -69,13 +68,10 @@ def get_embedding_for(text):
 
 # Function to upload vectors and associated question data
 def load_questions():
-
     index = pc.Index("questions")
-
     rows = []
 
     for i, question in enumerate(questions):
-
         # Note how we store the original question alongside the vector
         # in the metadata
         row = {
@@ -83,7 +79,6 @@ def load_questions():
             "values": get_embedding_for(question),
             "metadata": {"question": question},
         }
-
         rows.append(row)
 
     # Upload the rows as a batch
@@ -91,15 +86,15 @@ def load_questions():
 
     # Here, we show you how the vectors take some time to create
     print("Index Description...........")
-    print("you won't see nay vectors.. yet!")
+    print("you won't see any vectors.. yet!")
     print(index.describe_index_stats())
 
 
 # TODO Try out this function to get an embedding
 # The raw response from openAI will be printed
-get_embedding_for("How do I get a taxi in Boston?")
+# get_embedding_for("How do I get a taxi in Boston?")
 
 
 # TODO Uncomment these function calls and run this code to load data
-# create_index()
-# load_questions()
+create_index()
+load_questions()
