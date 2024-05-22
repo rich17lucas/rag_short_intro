@@ -1,12 +1,12 @@
 import os
-from dotenv import load_dotenv
-from pinecone import Pinecone, ServerlessSpec
-from openai import OpenAI
 
+from dotenv import load_dotenv
+from openai import OpenAI
+from pinecone import Pinecone, ServerlessSpec
 
 # We're loading env variables with dotenv
 # Store your env variable in .env for PINECONE_API_KEY
-load_dotenv()
+load_dotenv(override=True)
 oa = OpenAI()
 pc = Pinecone(api_key=os.getenv("PINECONE_API_KEY"))
 
