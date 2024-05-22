@@ -35,10 +35,6 @@ questions = [
 
 # Function to create the Pinecone index
 def create_index():
-    """
-    This function creates the questions index in Pinecone.
-    If it already exists, it will be deleted and recreated.
-    """
     try:
         pc.delete_index("questions")
         print("Deleted index `questions` from Pinecone")
@@ -60,9 +56,6 @@ def create_index():
 # Function to embed text, it will be used for uploading vectors
 # and for embedding any query before querying Pinecone
 def get_embedding_for(text):
-    """
-    A function to get the embedding for a given input text.
-    """
     response = oa.embeddings.create(model="text-embedding-3-small", input=text)
     print("-----------------------------------------------------------")
     print("Embedding text:", text)
@@ -104,7 +97,7 @@ def load_questions():
 
 # TODO Try out this function to get an embedding
 # The raw response from openAI will be printed
-# get_embedding_for('How do I get a taxi in Boston?')
+# get_embedding_for("How do I get a taxi in Boston?")
 
 
 # TODO Uncomment these function calls and run this code to load data
